@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bruh Button</title>
+  <style>
+    body {
+      background-color: #1a001a;
+      color: #ffc0cb;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .btn {
+      background: linear-gradient(145deg, #4d004d, #660066);
+      color: #ffc0cb;
+      padding: 20px 40px;
+      font-size: 24px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255, 192, 203, 0.5),
+                  inset 0 -4px 8px rgba(255, 255, 255, 0.1),
+                  inset 0 4px 8px rgba(0, 0, 0, 0.6);
+      transition: all 0.4s ease;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      z-index: 2;
+      position: relative;
+    }
+
+    .btn:hover {
+      background: linear-gradient(145deg, #660066, #4d004d);
+      transform: scale(1.1) rotateX(10deg);
+      box-shadow: 0 12px 25px rgba(255, 182, 193, 0.7),
+                  inset 0 -6px 10px rgba(255, 255, 255, 0.1),
+                  inset 0 6px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    .floating {
+      animation: floating 3s ease-in-out infinite;
+    }
+
+    @keyframes floating {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .message {
+      font-size: 30px;
+      font-weight: bold;
+      text-align: center;
+      text-shadow: 0 0 10px #ff99cc,
+                   0 0 20px #ff66b2,
+                   0 0 30px #ff66b2;
+      animation: pulse 2s infinite;
+      z-index: 2;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+    }
+
+    .flower {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background-image: url('https://openclipart.org/image/2400px/svg_to_png/238032/sakura-flower.png');
+      background-size: cover;
+      animation: fall 8s linear forwards;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-60px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .bubble {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle at center, #ffc0cb 0%, #ff66b2 70%);
+      border-radius: 50%;
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: 1;
+      animation: bubbleFall 2s ease-in-out infinite, bounce 0.5s ease-in-out infinite alternate;
+      transform-origin: center center;
+      box-shadow: 0 10px 30px rgba(255, 182, 193, 0.5); /* Adding 3D shadow */
+    }
+
+    @keyframes bubbleFall {
+      0% {
+        transform: translateY(-150px);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
+
+    @keyframes bounce {
+      0% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <button class="btn floating" id="bruhButton">bruh</button>
+
+  <div class="message hidden" id="message">Wala kang kausap na mariel 1 week</div>
+
+  <script>
+    const button = document.getElementById('bruhButton');
+    const message = document.getElementById('message');
+
+    let ballInterval;
+
+    button.addEventListener('click', () => {
+      button.classList.add('hidden');
+      message.classList.remove('hidden');
+
+      // Stop creating memory balls after button click and remove them
+      clearInterval(ballInterval);
+      removeMemoryBalls();
+      
+      // Start creating flowers
+      setInterval(createFlower, 400);
+    });
+
+    function createFlower() {
+      const flower = document.createElement('div');
+      flower.classList.add('flower');
+      flower.style.left = Math.random() * (window.innerWidth - 40) + 'px';
+      flower.style.top = '-60px';
+
+      document.body.appendChild(flower);
+
+      // Animate fall
+      flower.animate([ 
+        { transform: 'translateY(-60px) rotate(0deg)', opacity: 1 },
+        { transform: `translateY(${window.innerHeight}px) rotate(360deg)`, opacity: 0 }
+      ], {
+        duration: 8000,
+        easing: 'linear',
+        iterations: 1
+      });
+
+      // Remove flower after animation
+      setTimeout(() => {
+        if (flower.parentNode) {
+          flower.remove();
+        }
+      }, 8000);
+    }
+
+    function createBubble() {
+      const bubble = document.createElement('div');
+      bubble.classList.add('bubble');
+      
+      // Position bubbles randomly across the screen
+      const randomX = Math.random() * window.innerWidth;
+      bubble.style.left = randomX + 'px'; 
+      bubble.style.top = '-150px'; // Start position
+
+      document.body.appendChild(bubble);
+    }
+
+    function removeMemoryBalls() {
+      // Find and remove all memory balls
+      const allBubbles = document.querySelectorAll('.bubble');
+      allBubbles.forEach(bubble => {
+        bubble.remove();
+      });
+    }
+
+    // Create bubbles at regular intervals before button click
+    ballInterval = setInterval(createBubble, 400);
+
+  </script>
+
+</body>
+</html>
